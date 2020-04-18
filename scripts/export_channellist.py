@@ -32,7 +32,7 @@ chans_kwargs = {
 
 channels = htspapi.get_channels_grid(kwargs=chans_kwargs)
 rows = []
-print "# CHANNEL_NAME; CHANNEL_ICON; CHANNEL_SERVICE"
+print("# CHANNEL_NAME; CHANNEL_ICON; CHANNEL_SERVICE")
 for channel in channels:
     name_regex = '^%s$' % channel.get('name')
     icon = channel.get('icon')
@@ -45,5 +45,5 @@ for channel in channels:
             if pid == 'multiplex':
                 multiplex_value = pdict.get('value')
 
-    print "%s;%s;%s" % (name_regex, icon, multiplex_value)
+    print("%s;%s;%s" % (name_regex, icon, multiplex_value))
 

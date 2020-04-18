@@ -131,7 +131,7 @@ class HTSPApi(object):
             'path': 'idnode/save',
             'args': args
         })
-        print "enable_channels returned", self.htsp.recv()
+        print ("enable_channels returned", self.htsp.recv())
 
     def update_channels(self, uuids, data):
         nodes = []

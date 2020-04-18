@@ -85,6 +85,8 @@ def hmf_type(f):
         return HMF_STR
     elif type(f) == int:
         return HMF_S64
+    elif type(f) == bytes:
+        return HMF_BIN
     elif type(f) == HMFBin:
         return HMF_BIN
     elif type(f) == bool:
@@ -96,7 +98,7 @@ def hmf_type(f):
 # Size for field
 def _binary_count(f):
     ret = 0
-    if type(f) in [str, HMFBin]:
+    if type(f) in [str, HMFBin, bytes]:
         ret = ret + len(f)
     elif type(f) in [bool]:
         ret = ret + 1
@@ -145,6 +147,8 @@ def binary_write(msg):
             ret = ret + binary_write(f)
         elif type(f) in [bool]:
             ret = ret + chr(f)
+        elif type(f) in [bytes]:
+            ret = ret + f.decode('latin-1')
         elif type(f) in [str, HMFBin]:
             ret = ret + f
         elif type(f) == int:
@@ -160,7 +164,7 @@ def binary_write(msg):
 # Serialize a htsmsg
 def serialize(msg):
     cnt = binary_count(msg)
-    return int2bin(cnt) + binary_write(msg)
+    return int2bin(cnt).encode('latin-1') + binary_write(msg).encode('latin-1')
 
 
 # Deserialize an htsmsg
@@ -176,7 +180,7 @@ def deserialize0(data, typ=HMF_MAP):
         dlen = bin2int(data[2:6])
         data = data[6:]
 
-        if len < nlen + dlen: raise Exception('not enough data')
+        if len(data) < nlen + dlen: raise Exception('not enough data')
 
         name = data[:nlen]
         data = data[nlen:]
@@ -216,7 +220,7 @@ def deserialize(fp, rec=False):
             self._rec = rec
 
         def __iter__(self):
-            print '__iter__()'
+            print ('__iter__()')
             return self
 
         def _read(self, num):
@@ -238,13 +242,13 @@ def deserialize(fp, rec=False):
             if len(tmp) != 4:
                 self._fp = None
                 raise StopIteration()
-            num = bin2int(tmp)
+            num = bin2int(tmp.decode('latin-1'))
             data = ''
             while len(data) < num:
                 tmp = self._read(num - len(data))
                 if not tmp:
                     raise Exception('failed to read from fp')
-                data = data + tmp
+                data = data + tmp.decode('latin-1')
             if not self._rec: self._fp = None
             return deserialize0(data)
 

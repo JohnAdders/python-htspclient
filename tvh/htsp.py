@@ -22,8 +22,8 @@ Much of the code is pretty rough, but might help people get started
 with communicating with HTSP server
 """
 
-import log
-import htsmsg
+import tvh.log as log
+import tvh.htsmsg as htsmsg
 
 # ###########################################################################
 # HTSP Client
@@ -86,11 +86,11 @@ class HTSPClient(object):
 
     # Authenticate
     def authenticate(self, user, passwd=None):
-        user = str(user)
+        user = str(user).encode('latin-1')
         self._user = user
         if passwd:
-            passwd = str(passwd)
-            self._pass = htsp_digest(user, passwd, self._auth)
+            passwd = str(passwd).encode('latin-1')
+            self._pass = htsp_digest(user, passwd, self._auth.encode('latin-1'))
         self.send('authenticate')
         resp = self.recv()
         if 'noaccess' in resp:
